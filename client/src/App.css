@@ -565,6 +565,125 @@
   padding: var(--space-3) var(--space-4);
 }
 
+/* Expenses */
+
+.expense-form-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.expense-form-card h3 {
+  margin-bottom: var(--space-3);
+}
+
+.expense-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.expense-loading {
+  padding: var(--space-2) 0;
+}
+
+.expense-list {
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.expense-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.expense-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.expense-item-head h3 {
+  margin: 0;
+}
+
+.expense-amount {
+  font-weight: 600;
+  color: var(--text-h);
+  white-space: nowrap;
+}
+
+.expense-item-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  color: var(--text);
+  font-size: 13px;
+  margin-top: var(--space-2);
+}
+
+.expense-item-notes {
+  color: var(--text);
+  font-size: 14px;
+  margin-top: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
+.expense-item-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.expense-breakdown {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.expense-breakdown h3 {
+  font-size: 15px;
+}
+
+.expense-breakdown ul {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.expense-breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 14px;
+  padding: var(--space-1) 0;
+}
+
+.expense-breakdown-name {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.expense-breakdown-amount {
+  color: var(--text-h);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 /* Alerts */
 
 .alert {
@@ -679,6 +798,18 @@
   }
 
   .itinerary-actions .btn {
+    width: 100%;
+  }
+
+  .expense-item {
+    grid-template-columns: 1fr;
+  }
+
+  .expense-item-actions .btn {
+    flex: 1;
+  }
+
+  .section-head .btn {
     width: 100%;
   }
 }
