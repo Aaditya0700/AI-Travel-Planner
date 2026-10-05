@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/useAuth.js';
-import { tripService, formatDate, emptyTripForm, validateTrip, toTripPayload } from '../services/tripService.js';
+import {
+  tripService,
+  formatDate,
+  emptyTripForm,
+  validateTrip,
+  toTripPayload,
+  summariseTrips,
+  isUpcoming,
+} from '../services/tripService.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import Spinner from '../components/Spinner.jsx';
 import TripForm from '../components/TripForm.jsx';
@@ -18,6 +26,18 @@ export default function TripsPage() {
   const [errors, setErrors] = useState({});
   const [saveError, setSaveError] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  // Bumped to ask the loader below to run again, which is how the "Try again"
+  // button recovers from a failed request.
+  const [reloadCount, setReloadCount] = useState(0);
+
+  function handleReload() {
+    setReloadCount((count) => count + 1);
+  }
+
+  // Both numbers are counted from the loaded trips, so they can never disagree
+  // with the list below them.
+  const summary = summariseTrips(trips);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,7 +67,7 @@ export default function TripsPage() {
     return () => {
       cancelled = true;
     };
-  }, [handleUnauthorized]);
+  }, [handleUnauthorized, reloadCount]);
 
   // The submit event arrives from TripForm, which has already stopped the
   // browser's own submit, so there is nothing to prevent here.
@@ -87,7 +107,16 @@ export default function TripsPage() {
       <div className="page-header">
         <div>
           <h1>Your trips</h1>
-          {user && <p className="page-subtitle">Signed in as {user.email}</p>}
+          <p className="page-subtitle">
+            {user && `Signed in as ${user.email}`}
+            {summary.total > 0 && (
+              <>
+                {' · '}
+                {summary.total} {summary.total === 1 ? 'trip' : 'trips'}
+                {summary.upcoming > 0 && `, ${summary.upcoming} still to come`}
+              </>
+            )}
+          </p>
         </div>
 
         <button
@@ -125,13 +154,22 @@ export default function TripsPage() {
       )}
 
       {!loading && loadError && (
-        <ErrorMessage error={loadError} onDismiss={() => setLoadError(null)} />
+        <>
+          <ErrorMessage error={loadError} onDismiss={() => setLoadError(null)} />
+          <div className="empty-state">
+            <h2>Your trips could not be loaded</h2>
+            <p>Check your connection and try again.</p>
+            <button type="button" className="btn btn-primary" onClick={handleReload}>
+              Try again
+            </button>
+          </div>
+        </>
       )}
 
       {!loading && !loadError && trips.length === 0 && (
         <div className="empty-state">
           <h2>No trips yet</h2>
-          <p>Add your first trip to start planning.</p>
+          <p>Add your first trip to start planning expenses and a day by day itinerary.</p>
           <button type="button" className="btn btn-primary" onClick={() => setShowForm(true)}>
             Add trip
           </button>
@@ -144,6 +182,8 @@ export default function TripsPage() {
             <li key={trip.id} className="trip-card">
               <div className="trip-card-main">
                 <h3>
+                  {/* The whole card is a link, so the destination reads as the
+                      heading and stays keyboard reachable. */}
                   <Link to={`/trips/${trip.id}`}>{trip.destination}</Link>
                 </h3>
                 <p className="trip-card-dates">
@@ -151,8 +191,15 @@ export default function TripsPage() {
                 </p>
                 <div className="trip-card-tags">
                   <span className={`badge badge-${trip.status}`}>{trip.status}</span>
-                  {trip.numberOfDays && <span className="badge">{trip.numberOfDays} days</span>}
-                  {trip.budget !== null && (
+                  {trip.numberOfDays && (
+                    <span className="badge">
+                      {trip.numberOfDays} {trip.numberOfDays === 1 ? 'day' : 'days'}
+                    </span>
+                  )}
+                  {isUpcoming(trip) && trip.status !== 'completed' && (
+                    <span className="badge badge-upcoming">upcoming</span>
+                  )}
+                  {trip.budget !== null && trip.budget !== undefined && (
                     <span className="badge">
                       {trip.budget} {trip.currency}
                     </span>
@@ -162,6 +209,7 @@ export default function TripsPage() {
 
               <Link to={`/trips/${trip.id}`} className="btn btn-ghost">
                 View
+                <span className="visually-hidden"> {trip.destination}</span>
               </Link>
             </li>
           ))}

@@ -117,10 +117,16 @@ export function toDateInputValue(value) {
   return date.toISOString().slice(0, 10);
 }
 
+// The backend stores a chosen day as UTC midnight, so a date handed straight
+// to toLocaleDateString would read as the day before anywhere behind UTC. The
+// calendar day is taken off the timestamp and rebuilt as a local date, which is
+// the same trick the itinerary and the expenses use.
 export function formatDate(value) {
-  if (!value) return 'Not set';
+  const day = toCalendarDay(value);
+  if (!day) return 'Not set';
 
-  const date = new Date(value);
+  const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  const date = new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
   if (Number.isNaN(date.getTime())) return 'Not set';
 
   return date.toLocaleDateString(undefined, {
@@ -128,4 +134,31 @@ export function formatDate(value) {
     month: 'short',
     day: 'numeric',
   });
+}
+
+// The yyyy-mm-dd part of an ISO timestamp, or '' when there is no usable date.
+export function toCalendarDay(value) {
+  if (!value) return '';
+
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
+  return match ? match[1] : '';
+}
+
+// A trip is upcoming while it has not finished yet. A trip with no dates is
+// left out rather than guessed at, so the count only ever includes trips whose
+// dates are actually known.
+export function isUpcoming(trip, today = toCalendarDay(new Date().toISOString())) {
+  const end = toCalendarDay(trip.endDate);
+
+  return Boolean(end) && end >= today;
+}
+
+// A small, real summary for the dashboard: how many trips there are and how
+// many of them have not finished. Nothing here is invented, it is all counted
+// from the trips that were just loaded.
+export function summariseTrips(trips) {
+  return {
+    total: trips.length,
+    upcoming: trips.filter((trip) => isUpcoming(trip)).length,
+  };
 }

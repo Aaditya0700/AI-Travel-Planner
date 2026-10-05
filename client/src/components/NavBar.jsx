@@ -27,7 +27,11 @@ export default function NavBar() {
         </nav>
 
         <div className="nav-user">
-          {user && <span className="nav-email">{user.name}</span>}
+          {user && (
+            <span className="nav-user-name" title={user.email}>
+              {user.name}
+            </span>
+          )}
           <button type="button" className="btn btn-ghost" onClick={handleLogout}>
             Log out
           </button>

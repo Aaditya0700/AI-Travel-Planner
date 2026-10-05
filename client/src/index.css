@@ -11,6 +11,7 @@
   --danger: #c02626;
   --danger-bg: rgba(192, 38, 38, 0.08);
   --success: #1c7a4a;
+  --success-bg: rgba(28, 122, 74, 0.1);
   --warning: #9a6410;
   --warning-bg: rgba(154, 100, 16, 0.1);
   --shadow:
@@ -55,6 +56,7 @@
     --danger: #f08585;
     --danger-bg: rgba(240, 133, 133, 0.12);
     --success: #6ee7a8;
+    --success-bg: rgba(110, 231, 168, 0.12);
     --warning: #f0c274;
     --warning-bg: rgba(240, 194, 116, 0.12);
     --shadow:

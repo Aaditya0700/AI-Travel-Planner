@@ -45,6 +45,14 @@ export default function TripDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
+  // Bumped to ask the loader below to run again, which is how "Try again"
+  // recovers from a failed request.
+  const [reloadCount, setReloadCount] = useState(0);
+
+  function handleReload() {
+    setReloadCount((count) => count + 1);
+  }
+
   // Loading is derived: we are still waiting when the stored trip is not the
   // one this URL asks for, and the request has not already failed.
   const loading = trip?.id !== id && !(loadError && loadError.tripId === id);
@@ -74,7 +82,7 @@ export default function TripDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [id, handleUnauthorized]);
+  }, [id, handleUnauthorized, reloadCount]);
 
   function startEditing() {
     setForm(toForm(trip));
@@ -158,15 +166,43 @@ export default function TripDetailPage() {
   // Only show the error while it belongs to the trip in the URL.
   // loadError && guards the case where there is no error at all.
   if (loadError && loadError.tripId === id) {
+    // A trip that is gone is a normal thing to hit, for example when it was
+    // deleted in another tab, so it gets its own message instead of the raw
+    // "Trip not found" from the backend.
+    const isMissing = loadError.error?.status === 404;
+
     return (
       <div className="page">
         <div className="page-header">
-          <h1>Trip not available</h1>
+          <div>
+            <Link to="/trips" className="back-link">
+              &larr; All trips
+            </Link>
+            <h1>{isMissing ? 'Trip not found' : 'Trip not available'}</h1>
+          </div>
         </div>
-        <ErrorMessage error={loadError.error} />
-        <Link to="/trips" className="btn btn-ghost">
-          Back to trips
-        </Link>
+
+        {isMissing ? (
+          <div className="empty-state">
+            <h2>This trip no longer exists</h2>
+            <p>It may have been deleted. Your other trips are still safe.</p>
+            <Link to="/trips" className="btn btn-primary">
+              Back to trips
+            </Link>
+          </div>
+        ) : (
+          <>
+            <ErrorMessage error={loadError.error} />
+            <div className="form-actions">
+              <button type="button" className="btn btn-primary" onClick={handleReload}>
+                Try again
+              </button>
+              <Link to="/trips" className="btn btn-ghost">
+                Back to trips
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -183,12 +219,17 @@ export default function TripDetailPage() {
             &larr; All trips
           </Link>
           <h1>{trip.destination}</h1>
+          <p className="page-subtitle">
+            {formatDate(trip.startDate)} &rarr; {formatDate(trip.endDate)}
+            {trip.numberOfDays ? ` · ${trip.numberOfDays} days` : ''}
+            {` · ${trip.status}`}
+          </p>
         </div>
 
         {!editing && (
           <div className="header-actions">
             <button type="button" className="btn btn-ghost" onClick={startEditing}>
-              Edit
+              Edit trip
             </button>
             <button
               type="button"
@@ -196,7 +237,7 @@ export default function TripDetailPage() {
               onClick={handleDelete}
               disabled={deleting}
             >
-              {deleting ? <Spinner label="Deleting..." /> : 'Delete'}
+              {deleting ? <Spinner label="Deleting..." /> : 'Delete trip'}
             </button>
           </div>
         )}

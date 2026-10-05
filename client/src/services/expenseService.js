@@ -1,5 +1,9 @@
 import { api } from './apiClient.js';
-import { toDateInputValue } from './tripService.js';
+// The expense date is a full ISO timestamp stored at UTC midnight, so it is
+// read with the same calendar day helper the trips use.
+import { toCalendarDay, toDateInputValue } from './tripService.js';
+
+export { toCalendarDay };
 
 // Matches the routes in server/src/routes/expenses.js.
 export const expenseService = {
@@ -126,16 +130,6 @@ export function summariseExpenses(expenses) {
       .map(([name, amount]) => ({ name, amount }))
       .sort((a, b) => b.amount - a.amount),
   };
-}
-
-// The backend sends a date as a full ISO timestamp, but it always stores a
-// chosen day as UTC midnight, so the calendar day is taken straight off the
-// string. Reading it with a local Date instead would show the day before for
-// anyone west of UTC.
-export function toCalendarDay(value) {
-  if (!value) return '';
-  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
-  return match ? match[1] : '';
 }
 
 export function formatAmount(value) {
