@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
+import tripsRouter from './routes/trips.js';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', healthRouter);
 app.use('/api/v1', healthRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/trips', tripsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not found', path: req.originalUrl });
