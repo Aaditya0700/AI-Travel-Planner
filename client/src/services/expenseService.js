@@ -29,6 +29,12 @@ export const expenseService = {
   async remove(id) {
     return api.delete(`/api/v1/expenses/${id}`);
   },
+
+  // Fetches detailed analytics for a trip's expenses.
+  async getAnalytics(tripId) {
+    const data = await api.get(`/api/v1/expenses/analytics?tripId=${tripId}`);
+    return data;
+  },
 };
 
 // The rules below are copied from the backend validators in

@@ -17,6 +17,7 @@ import { formatDayDate as formatCalendarDate } from '../services/itineraryServic
 import ErrorMessage from './ErrorMessage.jsx';
 import Spinner from './Spinner.jsx';
 import ExpenseForm from './ExpenseForm.jsx';
+import ExpenseAnalytics from './ExpenseAnalytics.jsx';
 
 export default function ExpenseSection({ trip }) {
   const { handleUnauthorized } = useAuth();
@@ -295,6 +296,8 @@ export default function ExpenseSection({ trip }) {
           </ul>
         </div>
       )}
+
+      <ExpenseAnalytics trip={trip} />
     </section>
   );
 }

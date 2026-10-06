@@ -74,6 +74,87 @@ router.get('/summary', async (req, res) => {
   }
 });
 
+// Analytics endpoint - provides detailed spending analytics for a trip
+router.get('/analytics', async (req, res) => {
+  const { tripId } = req.query;
+
+  if (!tripId || !isValidId(tripId)) {
+    return res.status(400).json({ error: 'A valid tripId is required' });
+  }
+
+  try {
+    const trip = await findOwnTrip(tripId, req.user.id);
+
+    if (!trip) {
+      return res.status(404).json({ error: 'Trip not found' });
+    }
+
+    const tripIdObj = trip._id;
+    const userId = req.user.id;
+
+    // Fetch all needed data in parallel
+    const [totalResult, categoryResult, dateResult, highestResult, countResult] = await Promise.all([
+      // Total spent
+      Expense.aggregate([
+        { $match: { trip: tripIdObj, user: userId } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ]),
+      // By category
+      Expense.aggregate([
+        { $match: { trip: tripIdObj, user: userId } },
+        { $group: { _id: '$category', total: { $sum: '$amount' } } },
+        { $sort: { total: -1 } },
+        { $project: { category: '$_id', total: 1, _id: 0 } },
+      ]),
+      // By date (day)
+      Expense.aggregate([
+        { $match: { trip: tripIdObj, user: userId } },
+        {
+          $group: {
+            _id: {
+              $dateToString: { format: '%Y-%m-%d', date: '$date' },
+            },
+            total: { $sum: '$amount' },
+          },
+        },
+        { $sort: { _id: 1 } },
+        { $project: { date: '$_id', total: 1, _id: 0 } },
+      ]),
+      // Highest expense
+      Expense.findOne({ trip: tripIdObj, user: userId })
+        .sort({ amount: -1 })
+        .select('title amount')
+        .lean(),
+      // Expense count
+      Expense.countDocuments({ trip: tripIdObj, user: userId }),
+    ]);
+
+    const totalSpent = totalResult.length ? totalResult[0].total : 0;
+    const budget = trip.budget;
+    const remaining = budget !== null && budget !== undefined ? budget - totalSpent : null;
+    const budgetUsedPercentage = budget && budget > 0 ? (totalSpent / budget) * 100 : null;
+
+    return res.status(200).json({
+      tripId: trip._id,
+      currency: trip.currency,
+      budget: budget,
+      totalSpent,
+      remaining,
+      budgetUsedPercentage: budgetUsedPercentage !== null ? Number(budgetUsedPercentage.toFixed(2)) : null,
+      expenseCount: countResult,
+      highestExpense: highestResult
+        ? { title: highestResult.title, amount: highestResult.amount }
+        : null,
+      byCategory: categoryResult,
+      byDate: dateResult,
+    });
+  } catch (error) {
+    console.error('[expenses] analytics failed:', error.message);
+
+    return res.status(500).json({ error: 'Could not load expense analytics' });
+  }
+});
+
 router.post('/', createExpenseRules, handleValidation, async (req, res) => {
   const { tripId, title, amount, category, date, notes } = req.body;
 
