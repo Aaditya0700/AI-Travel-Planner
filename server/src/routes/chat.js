@@ -79,6 +79,10 @@ router.post('/', async (req, res) => {
         return res.status(502).json({ error: 'The AI assistant returned an unusable response' });
       }
 
+      if (error.code === 'AI_QUOTA_EXCEEDED') {
+        return res.status(429).json({ error: error.message });
+      }
+
       if (error.code === 'AI_UNAVAILABLE') {
         console.error('[chat] AI request failed:', error.message);
         return res.status(502).json({ error: 'The AI assistant is unavailable right now' });
