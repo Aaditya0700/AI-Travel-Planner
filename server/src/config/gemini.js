@@ -14,7 +14,8 @@ export function getGeminiModel() {
 }
 
 export function isGeminiConfigured() {
-  return Boolean(getGeminiApiKey() && getGeminiModel());
+  const key = getGeminiApiKey();
+  return Boolean(key && key !== 'your_gemini_api_key_here' && getGeminiModel());
 }
 
 // Raised when the AI feature is used on a server that has no key configured.

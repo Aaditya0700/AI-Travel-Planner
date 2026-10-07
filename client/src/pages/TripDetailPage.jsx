@@ -13,6 +13,8 @@ import Spinner from '../components/Spinner.jsx';
 import TripForm from '../components/TripForm.jsx';
 import ItinerarySection from '../components/ItinerarySection.jsx';
 import ExpenseSection from '../components/ExpenseSection.jsx';
+import TravelChatbot from '../components/TravelChatbot.jsx';
+import PhotoGuideSection from '../components/PhotoGuideSection.jsx';
 
 function toForm(trip) {
   return {
@@ -304,6 +306,10 @@ export default function TripDetailPage() {
       <ExpenseSection trip={trip} />
 
       <ItinerarySection trip={trip} />
+
+      <PhotoGuideSection trip={trip} />
+
+      <TravelChatbot trip={trip} />
     </div>
   );
 }

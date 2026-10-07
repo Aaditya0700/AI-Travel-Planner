@@ -17,11 +17,88 @@
   --shadow:
     rgba(26, 22, 37, 0.08) 0 10px 15px -3px, rgba(26, 22, 37, 0.04) 0 4px 6px -2px;
 
+  /* Stitch design tokens */
+  --stitch-primary: #005c55;
+  --stitch-primary-container: #0f766e;
+  --stitch-primary-fixed: #9cf2e8;
+  --stitch-primary-fixed-dim: #80d5cb;
+  --stitch-on-primary: #ffffff;
+  --stitch-on-primary-container: #a3faef;
+  --stitch-on-primary-fixed: #00201d;
+  --stitch-on-primary-fixed-variant: #00504a;
+  --stitch-secondary: #9d4300;
+  --stitch-secondary-container: #fd761a;
+  --stitch-secondary-fixed: #ffdbca;
+  --stitch-secondary-fixed-dim: #ffb690;
+  --stitch-on-secondary: #ffffff;
+  --stitch-on-secondary-container: #5c2400;
+  --stitch-on-secondary-fixed: #341100;
+  --stitch-on-secondary-fixed-variant: #783200;
+  --stitch-tertiary: #005683;
+  --stitch-tertiary-container: #006fa8;
+  --stitch-tertiary-fixed: #cce5ff;
+  --stitch-tertiary-fixed-dim: #93ccff;
+  --stitch-on-tertiary: #ffffff;
+  --stitch-on-tertiary-container: #dbecff;
+  --stitch-on-tertiary-fixed: #001d31;
+  --stitch-on-tertiary-fixed-variant: #004b73;
+  --stitch-error: #ba1a1a;
+  --stitch-error-container: #ffdad6;
+  --stitch-on-error: #ffffff;
+  --stitch-on-error-container: #93000a;
+  --stitch-background: #faf8ff;
+  --stitch-on-background: #131b2e;
+  --stitch-surface: #faf8ff;
+  --stitch-surface-bright: #faf8ff;
+  --stitch-surface-dim: #d2d9f4;
+  --stitch-surface-container-lowest: #ffffff;
+  --stitch-surface-container-low: #f2f3ff;
+  --stitch-surface-container: #eaedff;
+  --stitch-surface-container-high: #e2e7ff;
+  --stitch-surface-container-highest: #dae2fd;
+  --stitch-surface-variant: #dae2fd;
+  --stitch-on-surface: #131b2e;
+  --stitch-on-surface-variant: #3e4947;
+  --stitch-outline: #6e7977;
+  --stitch-outline-variant: #bdc9c6;
+  --stitch-inverse-surface: #283044;
+  --stitch-inverse-on-surface: #eef0ff;
+  --stitch-inverse-primary: #80d5cb;
+  --stitch-shadow-sm: rgba(19, 27, 46, 0.06) 0 1px 2px, rgba(19, 27, 46, 0.04) 0 1px 1px;
+  --stitch-shadow-md: rgba(19, 27, 46, 0.08) 0 4px 8px -2px, rgba(19, 27, 46, 0.04) 0 2px 4px -1px;
+  --stitch-shadow-lg: rgba(19, 27, 46, 0.1) 0 12px 24px -4px, rgba(19, 27, 46, 0.06) 0 4px 8px -2px;
+  --stitch-radius-sm: 8px;
+  --stitch-radius-md: 12px;
+  --stitch-radius-lg: 16px;
+  --stitch-radius-xl: 24px;
+  --stitch-radius-full: 9999px;
+  --stitch-space-xs: 4px;
+  --stitch-space-sm: 8px;
+  --stitch-space-md: 16px;
+  --stitch-space-lg: 24px;
+  --stitch-space-xl: 32px;
+  --stitch-space-2xl: 48px;
+  --stitch-gutter: 24px;
+  --stitch-gutter-mobile: 16px;
+
+  /* Landing page tokens */
+  --hero-height: 85vh;
+  --section-padding-y: 80px;
+  --container-max: 960px;
+  --card-radius: 16px;
+  --image-radius: 12px;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --blur-strength: 12px;
+  --gradient-primary: linear-gradient(135deg, var(--stitch-primary) 0%, var(--stitch-tertiary) 100%);
+  --gradient-hero: linear-gradient(135deg, rgba(0, 92, 85, 0.95) 0%, rgba(0, 86, 131, 0.9) 100%);
+  --gradient-cta: linear-gradient(135deg, var(--stitch-primary) 0%, var(--stitch-secondary) 100%);
+  --gradient-text: linear-gradient(135deg, var(--stitch-primary) 0%, var(--stitch-tertiary) 100%);
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
-  /* One spacing scale keeps padding and gaps consistent everywhere. */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -61,6 +138,61 @@
     --warning-bg: rgba(240, 194, 116, 0.12);
     --shadow:
       rgba(0, 0, 0, 0.45) 0 10px 15px -3px, rgba(0, 0, 0, 0.3) 0 4px 6px -2px;
+
+    --stitch-primary: #80d5cb;
+    --stitch-primary-container: #0f766e;
+    --stitch-primary-fixed: #00504a;
+    --stitch-primary-fixed-dim: #006a63;
+    --stitch-on-primary: #00201d;
+    --stitch-on-primary-container: #a3faef;
+    --stitch-on-primary-fixed: #9cf2e8;
+    --stitch-on-primary-fixed-variant: #80d5cb;
+    --stitch-secondary: #ffb690;
+    --stitch-secondary-container: #9d4300;
+    --stitch-secondary-fixed: #783200;
+    --stitch-secondary-fixed-dim: #fd761a;
+    --stitch-on-secondary: #341100;
+    --stitch-on-secondary-container: #ffdbca;
+    --stitch-on-secondary-fixed: #ffdbca;
+    --stitch-on-secondary-fixed-variant: #ffb690;
+    --stitch-tertiary: #93ccff;
+    --stitch-tertiary-container: #005683;
+    --stitch-tertiary-fixed: #004b73;
+    --stitch-tertiary-fixed-dim: #006fa8;
+    --stitch-on-tertiary: #001d31;
+    --stitch-on-tertiary-container: #cce5ff;
+    --stitch-on-tertiary-fixed: #dbecff;
+    --stitch-on-tertiary-fixed-variant: #93ccff;
+    --stitch-error: #ffb4ab;
+    --stitch-error-container: #93000a;
+    --stitch-on-error: #690005;
+    --stitch-on-error-container: #ffdad6;
+    --stitch-background: #131b2e;
+    --stitch-on-background: #eef0ff;
+    --stitch-surface: #131b2e;
+    --stitch-surface-bright: #3a4358;
+    --stitch-surface-dim: #0f1525;
+    --stitch-surface-container-lowest: #0d1424;
+    --stitch-surface-container-low: #1a2338;
+    --stitch-surface-container: #232c42;
+    --stitch-surface-container-high: #2e384f;
+    --stitch-surface-container-highest: #3a455d;
+    --stitch-surface-variant: #3a455d;
+    --stitch-on-surface: #eef0ff;
+    --stitch-on-surface-variant: #bdc9c6;
+    --stitch-outline: #818d8a;
+    --stitch-outline-variant: #3e4947;
+    --stitch-inverse-surface: #eef0ff;
+    --stitch-inverse-on-surface: #131b2e;
+    --stitch-inverse-primary: #005c55;
+    --stitch-shadow-sm: rgba(0, 0, 0, 0.2) 0 1px 2px, rgba(0, 0, 0, 0.15) 0 1px 1px;
+    --stitch-shadow-md: rgba(0, 0, 0, 0.3) 0 4px 8px -2px, rgba(0, 0, 0, 0.2) 0 2px 4px -1px;
+    --stitch-shadow-lg: rgba(0, 0, 0, 0.4) 0 12px 24px -4px, rgba(0, 0, 0, 0.3) 0 4px 8px -2px;
+
+    /* Dark mode landing page gradients */
+    --gradient-hero: linear-gradient(135deg, rgba(0, 92, 85, 0.95) 0%, rgba(0, 86, 131, 0.9) 100%);
+    --gradient-cta: linear-gradient(135deg, var(--stitch-primary) 0%, var(--stitch-secondary) 100%);
+    --gradient-text: linear-gradient(135deg, var(--stitch-primary-fixed) 0%, var(--stitch-tertiary-fixed) 100%);
   }
 }
 
@@ -68,13 +200,21 @@
   box-sizing: border-box;
 }
 
+html, body, #root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
 body {
   margin: 0;
   background: var(--bg);
+  overflow-x: hidden;
 }
 
 #root {
   min-height: 100svh;
+  width: 100%;
 }
 
 h1,

@@ -37,7 +37,13 @@ router.post('/register', registerRules, handleValidation, async (req, res) => {
       return res.status(409).json({ error: 'An account with this email already exists' });
     }
 
-    console.error('[auth] registration failed:', error.message);
+    console.error('[auth] registration failed:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      stack: error.stack,
+      fullError: error,
+    });
 
     return res.status(500).json({ error: 'Could not create the account' });
   }
