@@ -97,6 +97,14 @@ function isTransient(error) {
   return TRANSIENT_MESSAGE.test(error?.message || '');
 }
 
+function formatError(error) {
+  const status = readStatus(error);
+  const message = error?.message || String(error);
+  const name = error?.name || 'Error';
+  const details = status !== null ? ` (status: ${status})` : '';
+  return `${name}: ${message}${details}`;
+}
+
 // Anything the model returns is treated as untrusted input until validated.
 function readText(response) {
   const text = response?.text;
@@ -246,8 +254,9 @@ export async function generateItineraryDays(trip, numberOfDays) {
     throw lastError;
   }
 
+  console.error('[itinerary] AI request failed:', formatError(lastError));
   throw new GeminiServiceError(
-    `Gemini request failed (${lastError?.name || 'unknown'})`,
+    `Gemini request failed (${formatError(lastError)})`,
     'AI_UNAVAILABLE'
   );
 }

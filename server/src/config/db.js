@@ -32,3 +32,5 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('reconnected', () => {
   connected = true;
 });
+
+//mongodb+srv://brothersp143_db_user:AhdtV2ysXAZhiw2G@cluster0.xw9zhmq.mongodb.net/?appName=Cluster0

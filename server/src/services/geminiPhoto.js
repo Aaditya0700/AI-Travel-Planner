@@ -47,6 +47,14 @@ function isDeadlineExceeded(error) {
   return /deadline.?exceeded/i.test(error?.message || '');
 }
 
+function formatError(error) {
+  const status = readStatus(error);
+  const message = error?.message || String(error);
+  const name = error?.name || 'Error';
+  const details = status !== null ? ` (status: ${status})` : '';
+  return `${name}: ${message}${details}`;
+}
+
 // Free-tier Gemini keys enforce a per-day generate quota. Once it is spent
 // every request returns 429 RESOURCE_EXHAUSTED, which retrying cannot fix.
 function isQuotaError(error) {
@@ -129,9 +137,6 @@ export async function generatePhotoGuide(base64Image, mimeType) {
         config: {
           systemInstruction: { text: systemInstruction },
           temperature: 0.4,
-          thinkingConfig: {
-            thinkingLevel: 'low',
-          },
           httpOptions: {
             timeout: REQUEST_TIMEOUT_MS,
             retryOptions: { attempts: 1 },
@@ -178,9 +183,9 @@ export async function generatePhotoGuide(base64Image, mimeType) {
     throw lastError;
   }
 
-  console.error('[geminiPhoto] Request failed:', lastError?.message || lastError);
+  console.error('[geminiPhoto] Request failed:', formatError(lastError));
   throw new GeminiPhotoError(
-    `Gemini request failed (${lastError?.name || 'unknown'})`,
+    `Gemini request failed (${formatError(lastError)})`,
     'AI_UNAVAILABLE'
   );
 }

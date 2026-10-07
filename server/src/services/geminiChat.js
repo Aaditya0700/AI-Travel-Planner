@@ -51,6 +51,14 @@ function isTransient(error) {
   return TRANSIENT_MESSAGE.test(error?.message || '');
 }
 
+function formatError(error) {
+  const status = readStatus(error);
+  const message = error?.message || String(error);
+  const name = error?.name || 'Error';
+  const details = status !== null ? ` (status: ${status})` : '';
+  return `${name}: ${message}${details}`;
+}
+
 function readText(response) {
   const text = response?.text;
 
@@ -116,8 +124,9 @@ export async function sendChatMessage(trip, expenses, itinerary, history, userMe
     throw lastError;
   }
 
+  console.error('[chat] AI request failed:', formatError(lastError));
   throw new GeminiChatError(
-    `Gemini request failed (${lastError?.name || 'unknown'})`,
+    `Gemini request failed (${formatError(lastError)})`,
     'AI_UNAVAILABLE'
   );
 }
