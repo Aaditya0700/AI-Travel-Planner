@@ -29,7 +29,7 @@ export const attractions = [
     id: 'fort-kochi',
     name: 'Fort Kochi',
     destination: 'Kerala',
-    imageId: '1582510003544-4d00b7f74220',
+    imageId: '1645680149311-5a00ae5a2b2a',
     shortDesc: 'Historic coastal town with Chinese fishing nets and colonial architecture.',
     category: 'Heritage'
   },
@@ -61,8 +61,8 @@ export const attractions = [
     id: 'hawa-mahal',
     name: 'Hawa Mahal',
     destination: 'Jaipur',
-    imageId: '1477587458883-47181e0ac48a',
-    shortDesc: 'Palace of Winds with 953 windows — stunning honeycomb facade.',
+    imageId: '1578999935853-4ec5fa6c1f60',
+    shortDesc: 'Palace of Winds with 953 windows \u2014 stunning honeycomb facade.',
     category: 'Heritage'
   },
   {
@@ -77,8 +77,8 @@ export const attractions = [
     id: 'arashiyama-bamboo',
     name: 'Arashiyama Bamboo Grove',
     destination: 'Kyoto',
-    imageId: '1493976040374-85c8e12f0c0e',
-    shortDesc: 'Enchanting bamboo forest path — serene and photogenic.',
+    imageId: '1684877217817-03df38f83895',
+    shortDesc: 'Enchanting bamboo forest path \u2014 serene and photogenic.',
     category: 'Nature'
   }
 ];

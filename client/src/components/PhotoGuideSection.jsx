@@ -3,10 +3,104 @@ import { photoService, validateImageFile, compressImageForAnalysis } from '../se
 import ErrorMessage from './ErrorMessage.jsx';
 import Spinner from './Spinner.jsx';
 
-function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
+export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
+  const [videoReady, setVideoReady] = useState(false);
+  const streamRef = useRef(null);
+
+  const stopCamera = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    setCameraActive(false);
+    setCameraError(null);
+    setVideoReady(false);
+  }, []);
+
+  useEffect(() => {
+    return () => stopCamera();
+  }, [stopCamera]);
+
+  const startCamera = useCallback(async () => {
+    setCameraError(null);
+    setVideoReady(false);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setCameraActive(true);
+      setPreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (err) {
+      console.error('[PhotoGuide] Camera access failed:', err);
+      setCameraError(err.name === 'NotAllowedError'
+        ? 'Camera permission denied. Please allow camera access in your browser settings.'
+        : 'Could not access camera. Please use file upload instead.');
+    }
+  }, []);
+
+  const handleVideoLoadedMetadata = useCallback(() => {
+    setVideoReady(true);
+  }, []);
+
+  const capturePhoto = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+      setCameraError('Camera not ready. Please wait a moment and try again.');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        setCameraError('Failed to capture photo. Please try again.');
+        return;
+      }
+
+      const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+      stopCamera();
+
+      const validationError = validateImageFile(file);
+      if (validationError) {
+        onErrorDismiss();
+        setTimeout(() => onErrorDismiss(validationError), 0);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setPreview(event.target.result);
+      };
+      reader.readAsDataURL(file);
+
+      try {
+        const { base64, mimeType } = await compressImageForAnalysis(file);
+        onAnalyze(base64, mimeType);
+      } catch (err) {
+        console.error('[PhotoGuide] Image compression failed:', err);
+        onErrorDismiss('Failed to process image. Please try another.');
+      }
+    }, 'image/jpeg', 0.85);
+  }, [onAnalyze, onErrorDismiss, stopCamera]);
 
   const handleFile = useCallback(async (file) => {
     const validationError = validateImageFile(file);
@@ -22,7 +116,6 @@ function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
     };
     reader.readAsDataURL(file);
 
-    // Compress image before sending to reduce latency
     try {
       const { base64, mimeType } = await compressImageForAnalysis(file);
       onAnalyze(base64, mimeType);
@@ -75,24 +168,64 @@ function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
         ref={fileInputRef}
         type="file"
         accept="image/jpeg,image/png,image/webp"
+        capture="environment"
         onChange={handleFileSelect}
         style={{ display: 'none' }}
-        disabled={analyzing}
+        disabled={analyzing || cameraActive}
       />
 
       <div
-        className={`photo-dropzone ${dragActive ? 'active' : ''} ${preview ? 'has-preview' : ''}`}
+        className={`photo-dropzone ${dragActive ? 'active' : ''} ${preview ? 'has-preview' : ''} ${cameraActive ? 'camera-active' : ''}`}
         onDragEnter={handleDrag}
         onDragOver={handleDrag}
         onDragLeave={handleDrag}
         onDrop={handleDrop}
-        onClick={handleClick}
+        onClick={cameraActive ? undefined : handleClick}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick()}
-        aria-label="Upload a photo of a landmark or place"
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && !cameraActive && handleClick()}
+        aria-label={cameraActive ? 'Camera active' : 'Upload a photo of a landmark or place'}
       >
-        {preview ? (
+{cameraActive ? (
+              <>
+                <video
+                  ref={videoRef}
+                  className="camera-video"
+                  autoPlay
+                  playsInline
+                  muted
+                  aria-label="Camera preview"
+                  onLoadedMetadata={handleVideoLoadedMetadata}
+                />
+                {cameraError && (
+                  <div className="camera-error" role="alert">
+                    <span className="material-symbols-outlined">error</span>
+                    {cameraError}
+                  </div>
+                )}
+                <div className="camera-controls">
+                  <button
+                    type="button"
+                    className="btn btn-primary camera-capture-btn"
+                    onClick={capturePhoto}
+                    disabled={analyzing || !videoReady}
+                    aria-label="Take photo"
+                  >
+                    <span className="material-symbols-outlined">circle</span>
+                    <span>Capture</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost camera-cancel-btn"
+                    onClick={stopCamera}
+                    aria-label="Cancel camera"
+                  >
+                    <span className="material-symbols-outlined">close</span>
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              </>
+        ) : preview ? (
           <>
             <img src={preview} alt="Preview" className="photo-preview" />
             <button
@@ -116,11 +249,24 @@ function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
 
       <ErrorMessage error={error} onDismiss={onErrorDismiss} />
 
+      {!cameraActive && !preview && (
+        <button
+          type="button"
+          className="btn btn-secondary photo-camera-btn"
+          onClick={startCamera}
+          disabled={analyzing}
+          aria-label="Take photo with camera"
+        >
+          <span className="material-symbols-outlined">camera_alt</span>
+          Take Photo
+        </button>
+      )}
+
       <button
         type="button"
         className="btn btn-primary photo-analyze-btn"
         onClick={() => fileInputRef.current?.click()}
-        disabled={analyzing || !preview}
+        disabled={analyzing || !preview || cameraActive}
       >
         {analyzing ? (
           <>
@@ -135,7 +281,7 @@ function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
   );
 }
 
-function PhotoGuide({ guide, onSpeak, speaking, onClose }) {
+export function PhotoGuide({ guide, onSpeak, speaking, onClose }) {
   const utteranceRef = useRef(null);
 
   useEffect(() => {

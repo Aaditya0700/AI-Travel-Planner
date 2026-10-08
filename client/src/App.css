@@ -2653,6 +2653,117 @@
   }
 }
 
+/* Camera styles for Photo Guide */
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.camera-error {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 0, 0, 0.9);
+  color: #fff;
+  border-radius: var(--radius);
+  font-size: 13px;
+  z-index: 10;
+}
+
+.camera-error .material-symbols-outlined {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.camera-controls {
+  position: absolute;
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-3);
+  z-index: 10;
+}
+
+.camera-capture-btn,
+.camera-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.camera-capture-btn {
+  background: #fff;
+  color: var(--text-h);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.camera-capture-btn:hover:not(:disabled) {
+  background: var(--accent-bg);
+  color: var(--accent);
+  transform: scale(1.05);
+}
+
+.camera-capture-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.camera-cancel-btn {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+.camera-cancel-btn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.camera-capture-btn .material-symbols-outlined,
+.camera-cancel-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.photo-camera-btn {
+  width: 100%;
+  max-width: 400px;
+}
+
+.photo-dropzone.camera-active {
+  border-color: transparent;
+  border-radius: 0;
+  background: #000;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .camera-controls {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .camera-capture-btn,
+  .camera-cancel-btn {
+    width: 100%;
+    max-width: 280px;
+    justify-content: center;
+  }
+}
+
 /* ============================================================
    Landing page
    ============================================================ */
@@ -2772,7 +2883,8 @@
   margin: 0 auto var(--stitch-space-lg);
   font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(220, 235, 238, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .hero-ctas {
@@ -2806,16 +2918,14 @@
 }
 
 .hero-ctas .btn-outline {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(8, 46, 52, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #fff;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
 }
 
 .hero-ctas .btn-outline:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.24);
-  border-color: rgba(255, 255, 255, 0.85);
+  background: rgba(8, 46, 52, 1);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .hero-search {
@@ -3634,116 +3744,85 @@
 /* Footer */
 
 .footer {
-  padding: var(--stitch-space-2xl) 0 var(--stitch-space-xl);
+  padding: var(--stitch-space-md) 0;
   background: var(--stitch-inverse-surface);
   color: var(--stitch-inverse-on-surface);
   width: 100%;
   overflow-x: hidden;
+  border-top: 1px solid rgba(238, 240, 255, 0.08);
 }
 
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1.5fr repeat(3, 1fr);
-  gap: var(--stitch-space-xl);
-  width: 100%;
-  max-width: 100%;
+.footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--stitch-space-lg);
+  flex-wrap: wrap;
 }
 
 .footer-brand {
-  display: flex;
-  flex-direction: column;
-  gap: var(--stitch-space-md);
+  flex-shrink: 0;
 }
 
 .footer-logo {
   display: flex;
   align-items: center;
   gap: var(--stitch-space-sm);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--stitch-inverse-on-surface);
 }
 
 .footer-logo .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   font-size: 14px;
-}
-
-.footer-tagline {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: rgba(238, 240, 255, 0.7);
-}
-
-.footer-heading {
-  margin: 0 0 var(--stitch-space-md);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #fff;
-}
-
-.footer-section ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: grid;
-  gap: var(--stitch-space-sm);
-}
-
-.footer-section a {
-  font-size: 14px;
-  color: rgba(238, 240, 255, 0.75);
-  text-decoration: none;
-}
-
-.footer-section a:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
-.footer-bottom {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--stitch-space-md);
-  margin-top: var(--stitch-space-xl);
-  padding-top: var(--stitch-space-lg);
-  border-top: 1px solid rgba(238, 240, 255, 0.16);
+  place-items: center;
+  border-radius: var(--stitch-radius-sm);
+  background: var(--stitch-primary);
+  color: var(--stitch-on-primary);
 }
 
 .footer-social {
   display: flex;
+  align-items: center;
   gap: var(--stitch-space-sm);
+  flex-wrap: wrap;
 }
 
 .footer-social-link {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(238, 240, 255, 0.1);
+  background: rgba(238, 240, 255, 0.08);
   color: var(--stitch-inverse-on-surface);
   text-decoration: none;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
 }
 
 .footer-social-link:hover {
-  background: rgba(238, 240, 255, 0.22);
+  background: var(--stitch-primary);
+  color: var(--stitch-on-primary);
+  transform: translateY(-2px);
 }
 
-.footer-social-link .material-symbols-outlined {
-  font-size: 20px;
+.footer-social-link svg {
+  display: block;
 }
 
-.footer-copyright {
-  margin: 0;
-  font-size: 13px;
-  color: rgba(238, 240, 255, 0.6);
+@media (max-width: 640px) {
+  .footer-row {
+    flex-direction: column;
+    gap: var(--stitch-space-md);
+    text-align: center;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
 }
 
 /* Landing responsive */

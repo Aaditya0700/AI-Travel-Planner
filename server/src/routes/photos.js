@@ -20,8 +20,9 @@ function isValidId(id) {
 router.post('/analyze', async (req, res) => {
   const { tripId, image, mimeType } = req.body;
 
-  if (!tripId || !isValidId(tripId)) {
-    return res.status(400).json({ error: 'A valid tripId is required' });
+  // tripId is optional for standalone photo analysis
+  if (tripId && !isValidId(tripId)) {
+    return res.status(400).json({ error: 'Invalid tripId format' });
   }
 
   if (!image || typeof image !== 'string') {
@@ -43,12 +44,14 @@ router.post('/analyze', async (req, res) => {
   }
 
   try {
-    // Verify the trip belongs to the user
-    const Trip = (await import('../models/Trip.js')).default;
-    const trip = await Trip.findOne({ _id: tripId, user: req.user.id });
+    // If tripId provided, verify the trip belongs to the user
+    if (tripId) {
+      const Trip = (await import('../models/Trip.js')).default;
+      const trip = await Trip.findOne({ _id: tripId, user: req.user.id });
 
-    if (!trip) {
-      return res.status(404).json({ error: 'Trip not found' });
+      if (!trip) {
+        return res.status(404).json({ error: 'Trip not found' });
+      }
     }
 
     const guide = await generatePhotoGuide(image, mimeType);

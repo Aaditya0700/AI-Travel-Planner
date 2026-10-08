@@ -1,4 +1,4 @@
-﻿// Popular food and culinary experiences data with stable Unsplash image URLs
+﻿// Popular food and culinary experiences data with verified image URLs
 
 export const foodExperiences = [
   {
@@ -21,32 +21,32 @@ export const foodExperiences = [
     id: 'rogan-josh',
     name: 'Rogan Josh',
     destination: 'Kashmir',
-    imageId: '1546069901-ba9599a7e63c',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Mutton_rogan_josh.jpg',
     shortDesc: 'Aromatic lamb curry slow-cooked with Kashmiri chilies and spices.',
     isMustTry: true
   },
-  {
+{
     id: 'appam-stew',
     name: 'Appam & Stew',
     destination: 'Kerala',
-    imageId: '1565299585323-38d6b0865b47',
-    shortDesc: 'Lacy rice pancakes with creamy vegetable or meat stew — breakfast classic.',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Appam_and_stew.jpg',
+    shortDesc: 'Lacy rice pancakes with creamy vegetable or meat stew \u2014 breakfast classic.',
     isMustTry: true
   },
-  {
+{
     id: 'vada-pav',
     name: 'Vada Pav',
     destination: 'Mumbai',
-    imageId: '1565299585323-38d6b0865b47',
-    shortDesc: 'Mumbai\'s beloved street food — spicy potato fritter in a soft bun.',
+    imageId: '1750767397012-3413ba4fdbc7',
+    shortDesc: 'Mumbai\'s beloved street food \u2014 spicy potato fritter in a soft bun.',
     isMustTry: true
   },
-  {
+{
     id: 'chole-bhature',
     name: 'Chole Bhature',
     destination: 'Delhi',
-    imageId: '1565299585323-38d6b0865b47',
-    shortDesc: 'Spicy chickpea curry with fluffy fried bread — Punjabi comfort food.',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Chole_bhature.jpg',
+    shortDesc: 'Spicy chickpea curry with fluffy fried bread \u2014 Punjabi comfort food.',
     isMustTry: true
   },
   {
@@ -70,6 +70,13 @@ export const foodExperiences = [
 export function getFoodImageUrl(imageId, options = {}) {
   const { width = 500, height = 500, quality = 80 } = options;
   return `https://images.unsplash.com/photo-${imageId}?w=${width}&h=${height}&fit=crop&auto=format&q=${quality}`;
+}
+
+export function getFoodImageUrlFromUrl(imageUrl, options = {}) {
+  // For direct image URLs (e.g., Wikimedia Commons), append size parameters if supported
+  // Wikimedia Commons Special:FilePath doesn't support query params for resizing
+  // Return as-is; CSS will handle sizing
+  return imageUrl;
 }
 
 export function getFoodPlaceholder(name) {

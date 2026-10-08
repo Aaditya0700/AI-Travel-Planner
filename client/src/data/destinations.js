@@ -18,11 +18,11 @@ export const destinations = [
     shortDesc: 'Sun-drenched beaches, Portuguese heritage, and legendary nightlife.',
     anchor: 'goa'
   },
-  {
+{
     id: 'kashmir',
     name: 'Kashmir',
     country: 'India',
-    imageId: '1602216056096-3b40cc0c9944',
+    imageId: '1631420105765-caf5ccd069bc',
     shortDesc: 'Paradise on Earth \u2014 snow-capped peaks, serene lakes, and houseboats.',
     anchor: 'kashmir'
   },
@@ -30,7 +30,7 @@ export const destinations = [
     id: 'kerala',
     name: 'Kerala',
     country: 'India',
-    imageId: '1602216056096-3b40cc0c9944',
+    imageId: '1593693411515-c20261bcad6e',
     shortDesc: "God's Own Country \u2014 backwaters, Ayurveda, and lush tea plantations.",
     anchor: 'kerala'
   },

@@ -1,4 +1,4 @@
-﻿import { foodExperiences, getFoodImageUrl, getFoodPlaceholder } from '../../data/food.js';
+﻿import { foodExperiences, getFoodImageUrl, getFoodImageUrlFromUrl, getFoodPlaceholder } from '../../data/food.js';
 
 export default function FoodSection() {
   return (
@@ -20,7 +20,7 @@ export default function FoodSection() {
             >
               <div className='food-card-image'>
                 <img
-                  src={getFoodImageUrl(food.imageId, { width: 500, height: 500 })}
+                  src={food.imageUrl ? getFoodImageUrlFromUrl(food.imageUrl) : getFoodImageUrl(food.imageId, { width: 500, height: 500 })}
                   alt={`${food.name}, ${food.destination}`}
                   loading='lazy'
                   onError={(e) => { e.currentTarget.src = getFoodPlaceholder(food.name); }}
