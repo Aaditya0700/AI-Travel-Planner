@@ -6,7 +6,9 @@
 // responseSchema, because constrained schema output was one of the request
 // shapes that stalled gemini-3.8-flash. Parsing is defensive instead.
 
-export function buildPhotoGuidePrompt() {
+export function buildPhotoGuidePrompt(language = 'English') {
+  const isHindi = language === 'Hindi' || language === 'hi' || language === 'हिन्दी';
+
   const systemInstruction = [
     'You are an expert travel guide and landmark identification specialist.',
     'Analyze the provided photo to identify the landmark or notable place.',
@@ -15,11 +17,17 @@ export function buildPhotoGuidePrompt() {
     'No markdown, no code fences, no commentary before or after the JSON.',
     'If you cannot identify the place with confidence, still return a valid JSON object but say in placeName that the location is uncertain, and say in the description that identification is uncertain instead of inventing facts.',
     'Be accurate and factual. If unsure about details, give general guidance rather than inventing specifics.',
-    'Keep every field short: one or two sentences for prose fields, up to five short items for list fields.'
+    'Keep every field short: one or two sentences for prose fields, up to five short items for list fields.',
+    isHindi
+      ? 'CRITICAL LANGUAGE REQUIREMENT: Write ALL guide text content and array values entirely in natural Hindi using the Devanagari script (हिन्दी). Do NOT use Latin/Romanized script for Hindi. All JSON object keys/field names MUST remain strictly in English exactly as specified (e.g. "placeName", "location", "description", "history", "significance", "bestTimeToVisit", "highlights", "practicalInfo", "openingHours", "entryFee", "howToGetThere", "tips", "nearbyAttractions", "photoTips"). Never translate JSON keys into Hindi.'
+      : 'Write all guide text content in English.'
   ].join(' ');
 
   const userPrompt = [
     'Identify the landmark or notable place in this photo and create a travel guide.',
+    isHindi
+      ? 'CRITICAL: The output values must be in natural Hindi written in Devanagari script (हिन्दी). Every string value in the JSON must be in Hindi. Every key name in the JSON MUST remain in English exactly as shown below without translating any key names.'
+      : 'Write the travel guide in English.',
     '',
     'Return JSON in exactly this shape:',
     '{',
@@ -58,17 +66,6 @@ function readRequiredArray(value, field) {
   return value.map((item) => readRequiredString(item, `${field} item`));
 }
 
-function readRequiredObject(value, field, requiredKeys) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error(`Gemini response is missing ${field}`);
-  }
-  const result = {};
-  for (const key of requiredKeys) {
-    result[key] = readRequiredString(value[key], `${field}.${key}`);
-  }
-  return result;
-}
-
 // Gemini sometimes wraps JSON in a ```json markdown fence despite instructions.
 function stripCodeFences(text) {
   const fenced = text.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
@@ -88,6 +85,10 @@ export function parseAndValidatePhotoGuide(text) {
     throw new Error('Gemini response was not an object');
   }
 
+  if (!parsed.practicalInfo || typeof parsed.practicalInfo !== 'object' || Array.isArray(parsed.practicalInfo)) {
+    throw new Error('Gemini response is missing practicalInfo');
+  }
+
   return {
     placeName: readRequiredString(parsed.placeName, 'placeName'),
     location: readRequiredString(parsed.location, 'location'),
@@ -96,12 +97,12 @@ export function parseAndValidatePhotoGuide(text) {
     significance: readRequiredString(parsed.significance, 'significance'),
     bestTimeToVisit: readRequiredString(parsed.bestTimeToVisit, 'bestTimeToVisit'),
     highlights: readRequiredArray(parsed.highlights, 'highlights'),
-    practicalInfo: readRequiredObject(parsed.practicalInfo, 'practicalInfo', [
-      'openingHours',
-      'entryFee',
-      'howToGetThere',
-      'tips'
-    ]),
+    practicalInfo: {
+      openingHours: readRequiredString(parsed.practicalInfo.openingHours, 'practicalInfo.openingHours'),
+      entryFee: readRequiredString(parsed.practicalInfo.entryFee, 'practicalInfo.entryFee'),
+      howToGetThere: readRequiredString(parsed.practicalInfo.howToGetThere, 'practicalInfo.howToGetThere'),
+      tips: readRequiredArray(parsed.practicalInfo.tips, 'practicalInfo.tips'),
+    },
     nearbyAttractions: readRequiredArray(parsed.nearbyAttractions, 'nearbyAttractions'),
     photoTips: readRequiredArray(parsed.photoTips, 'photoTips')
   };

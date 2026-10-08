@@ -8,15 +8,16 @@ export default function PhotoGuidePage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState(null);
+  const [language, setLanguage] = useState('English');
 
-  const handleAnalyze = useCallback(async (base64Image, mimeType) => {
+  const handleAnalyze = useCallback(async (base64Image, mimeType, selectedLang = language) => {
     setAnalyzing(true);
     setError(null);
     setGuide(null);
 
     try {
       // For standalone page, we don't pass a tripId
-      const result = await photoService.analyzePhoto(null, base64Image, mimeType);
+      const result = await photoService.analyzePhoto(null, base64Image, mimeType, selectedLang);
       setGuide(result);
     } catch (err) {
       const message = err?.status === 0
@@ -26,7 +27,7 @@ export default function PhotoGuidePage() {
     } finally {
       setAnalyzing(false);
     }
-  }, []);
+  }, [language]);
 
   const handleErrorDismiss = useCallback((message) => {
     if (message) setError(message);
@@ -76,7 +77,14 @@ export default function PhotoGuidePage() {
         {guide ? (
           <PhotoGuide guide={guide} onSpeak={handleSpeak} speaking={speaking} onClose={handleClose} />
         ) : (
-          <PhotoUpload onAnalyze={handleAnalyze} analyzing={analyzing} error={error} onErrorDismiss={handleErrorDismiss} />
+          <PhotoUpload
+            onAnalyze={handleAnalyze}
+            analyzing={analyzing}
+            error={error}
+            onErrorDismiss={handleErrorDismiss}
+            language={language}
+            onLanguageChange={setLanguage}
+          />
         )}
       </section>
     </div>

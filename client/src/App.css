@@ -2384,6 +2384,69 @@
   align-items: center;
 }
 
+.photo-lang-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.photo-lang-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.photo-lang-icon {
+  font-size: 18px;
+  color: var(--accent);
+}
+
+.photo-lang-options {
+  display: inline-flex;
+  background: var(--bg);
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.photo-lang-btn {
+  padding: 4px 14px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.photo-lang-btn:hover:not(.active):not(:disabled) {
+  color: var(--text-h);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.photo-lang-btn.active {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(109, 60, 224, 0.3);
+}
+
+.photo-lang-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .photo-dropzone {
   position: relative;
   width: 100%;

@@ -3,7 +3,14 @@ import { photoService, validateImageFile, compressImageForAnalysis } from '../se
 import ErrorMessage from './ErrorMessage.jsx';
 import Spinner from './Spinner.jsx';
 
-export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
+export function PhotoUpload({
+  onAnalyze,
+  analyzing,
+  error,
+  onErrorDismiss,
+  language = 'English',
+  onLanguageChange,
+}) {
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
   const [preview, setPreview] = useState(null);
@@ -12,11 +19,18 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
   const [cameraError, setCameraError] = useState(null);
   const [videoReady, setVideoReady] = useState(false);
   const streamRef = useRef(null);
+  const [internalLanguage, setInternalLanguage] = useState('English');
+
+  const selectedLanguage = onLanguageChange ? language : internalLanguage;
+  const handleLanguageChange = onLanguageChange || setInternalLanguage;
 
   const stopCamera = useCallback(() => {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     setCameraActive(false);
     setCameraError(null);
@@ -27,19 +41,37 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
     return () => stopCamera();
   }, [stopCamera]);
 
+  useEffect(() => {
+    if (cameraActive && videoRef.current && streamRef.current) {
+      const video = videoRef.current;
+      video.srcObject = streamRef.current;
+      video.play().catch((err) => {
+        console.error('[PhotoGuide] video.play() failed:', err);
+      });
+    }
+  }, [cameraActive]);
+
   const startCamera = useCallback(async () => {
     setCameraError(null);
     setVideoReady(false);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-        audio: false,
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false,
+        });
+      } catch (err) {
+        if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+        } else {
+          throw err;
+        }
       }
+      streamRef.current = stream;
       setCameraActive(true);
       setPreview(null);
       if (fileInputRef.current) {
@@ -50,16 +82,17 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
       setCameraError(err.name === 'NotAllowedError'
         ? 'Camera permission denied. Please allow camera access in your browser settings.'
         : 'Could not access camera. Please use file upload instead.');
+      setCameraActive(false);
     }
   }, []);
 
-  const handleVideoLoadedMetadata = useCallback(() => {
+  const handleVideoCanPlay = useCallback(() => {
     setVideoReady(true);
   }, []);
 
   const capturePhoto = useCallback(async () => {
     const video = videoRef.current;
-    if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
+    if (!video || video.readyState < 2 || video.videoWidth === 0 || video.videoHeight === 0) {
       setCameraError('Camera not ready. Please wait a moment and try again.');
       return;
     }
@@ -70,37 +103,39 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0);
 
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        setCameraError('Failed to capture photo. Please try again.');
-        return;
-      }
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', 0.85);
+    });
 
-      const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
-      stopCamera();
+    if (!blob) {
+      setCameraError('Failed to capture photo. Please try again.');
+      return;
+    }
 
-      const validationError = validateImageFile(file);
-      if (validationError) {
-        onErrorDismiss();
-        setTimeout(() => onErrorDismiss(validationError), 0);
-        return;
-      }
+    const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
+    stopCamera();
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setPreview(event.target.result);
-      };
-      reader.readAsDataURL(file);
+    const validationError = validateImageFile(file);
+    if (validationError) {
+      onErrorDismiss();
+      setTimeout(() => onErrorDismiss(validationError), 0);
+      return;
+    }
 
-      try {
-        const { base64, mimeType } = await compressImageForAnalysis(file);
-        onAnalyze(base64, mimeType);
-      } catch (err) {
-        console.error('[PhotoGuide] Image compression failed:', err);
-        onErrorDismiss('Failed to process image. Please try another.');
-      }
-    }, 'image/jpeg', 0.85);
-  }, [onAnalyze, onErrorDismiss, stopCamera]);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreview(event.target.result);
+    };
+    reader.readAsDataURL(file);
+
+    try {
+      const { base64, mimeType } = await compressImageForAnalysis(file);
+      onAnalyze(base64, mimeType, selectedLanguage);
+    } catch (err) {
+      console.error('[PhotoGuide] Image compression failed:', err);
+      onErrorDismiss('Failed to process image. Please try another.');
+    }
+  }, [onAnalyze, onErrorDismiss, stopCamera, selectedLanguage]);
 
   const handleFile = useCallback(async (file) => {
     const validationError = validateImageFile(file);
@@ -118,12 +153,12 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
 
     try {
       const { base64, mimeType } = await compressImageForAnalysis(file);
-      onAnalyze(base64, mimeType);
+      onAnalyze(base64, mimeType, selectedLanguage);
     } catch (err) {
       console.error('[PhotoGuide] Image compression failed:', err);
       onErrorDismiss('Failed to process image. Please try another.');
     }
-  }, [onAnalyze, onErrorDismiss]);
+  }, [onAnalyze, onErrorDismiss, selectedLanguage]);
 
   const handleDrag = useCallback((e) => {
     e.preventDefault();
@@ -164,6 +199,33 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
 
   return (
     <div className="photo-upload">
+      <div className="photo-lang-selector" role="group" aria-label="Select guide language">
+        <span className="photo-lang-label">
+          <span className="material-symbols-outlined photo-lang-icon">translate</span>
+          <span>Language:</span>
+        </span>
+        <div className="photo-lang-options">
+          <button
+            type="button"
+            className={`photo-lang-btn ${selectedLanguage === 'English' ? 'active' : ''}`}
+            onClick={() => handleLanguageChange('English')}
+            disabled={analyzing || cameraActive}
+            aria-pressed={selectedLanguage === 'English'}
+          >
+            English
+          </button>
+          <button
+            type="button"
+            className={`photo-lang-btn ${selectedLanguage === 'हिन्दी' ? 'active' : ''}`}
+            onClick={() => handleLanguageChange('हिन्दी')}
+            disabled={analyzing || cameraActive}
+            aria-pressed={selectedLanguage === 'हिन्दी'}
+          >
+            हिन्दी
+          </button>
+        </div>
+      </div>
+
       <input
         ref={fileInputRef}
         type="file"
@@ -195,7 +257,8 @@ export function PhotoUpload({ onAnalyze, analyzing, error, onErrorDismiss }) {
                   playsInline
                   muted
                   aria-label="Camera preview"
-                  onLoadedMetadata={handleVideoLoadedMetadata}
+                  onCanPlay={handleVideoCanPlay}
+                  onLoadedMetadata={handleVideoCanPlay}
                 />
                 {cameraError && (
                   <div className="camera-error" role="alert">
@@ -315,7 +378,8 @@ export function PhotoGuide({ guide, onSpeak, speaking, onClose }) {
     }
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
+    const hasHindiChars = /[\u0900-\u097F]/.test(text);
+    utterance.lang = hasHindiChars ? 'hi-IN' : 'en-US';
     utterance.rate = 0.95;
     utterance.pitch = 1;
     utterance.volume = 1;
@@ -473,14 +537,15 @@ export default function PhotoGuideSection({ trip }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState(null);
+  const [language, setLanguage] = useState('English');
 
-  const handleAnalyze = useCallback(async (base64Image, mimeType) => {
+  const handleAnalyze = useCallback(async (base64Image, mimeType, selectedLang = language) => {
     setAnalyzing(true);
     setError(null);
     setGuide(null);
 
     try {
-      const result = await photoService.analyzePhoto(trip.id, base64Image, mimeType);
+      const result = await photoService.analyzePhoto(trip.id, base64Image, mimeType, selectedLang);
       setGuide(result);
     } catch (err) {
       const message = err?.status === 0
@@ -490,7 +555,7 @@ export default function PhotoGuideSection({ trip }) {
     } finally {
       setAnalyzing(false);
     }
-  }, [trip.id]);
+  }, [trip.id, language]);
 
   const handleErrorDismiss = useCallback((message) => {
     if (message) setError(message);
@@ -529,7 +594,14 @@ export default function PhotoGuideSection({ trip }) {
       {guide ? (
         <PhotoGuide guide={guide} onSpeak={handleSpeak} speaking={speaking} onClose={handleClose} />
       ) : (
-        <PhotoUpload onAnalyze={handleAnalyze} analyzing={analyzing} error={error} onErrorDismiss={handleErrorDismiss} />
+        <PhotoUpload
+          onAnalyze={handleAnalyze}
+          analyzing={analyzing}
+          error={error}
+          onErrorDismiss={handleErrorDismiss}
+          language={language}
+          onLanguageChange={setLanguage}
+        />
       )}
     </section>
   );

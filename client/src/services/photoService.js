@@ -1,8 +1,8 @@
 import { api } from './apiClient.js';
 
 export const photoService = {
-  async analyzePhoto(tripId, base64Image, mimeType) {
-    const body = { image: base64Image, mimeType };
+  async analyzePhoto(tripId, base64Image, mimeType, language = 'English') {
+    const body = { image: base64Image, mimeType, language };
     if (tripId) body.tripId = tripId;
     const data = await api.post('/api/v1/vision/analyze', body);
     return data.guide;

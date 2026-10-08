@@ -18,7 +18,7 @@ function isValidId(id) {
 }
 
 router.post('/analyze', async (req, res) => {
-  const { tripId, image, mimeType } = req.body;
+  const { tripId, image, mimeType, language } = req.body;
 
   // tripId is optional for standalone photo analysis
   if (tripId && !isValidId(tripId)) {
@@ -54,7 +54,7 @@ router.post('/analyze', async (req, res) => {
       }
     }
 
-    const guide = await generatePhotoGuide(image, mimeType);
+    const guide = await generatePhotoGuide(image, mimeType, language);
 
     return res.status(200).json({
       message: 'Photo guide generated successfully',

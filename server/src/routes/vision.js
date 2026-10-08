@@ -13,7 +13,7 @@ const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 router.post('/analyze', async (req, res) => {
-  const { image, mimeType, tripId } = req.body;
+  const { image, mimeType, tripId, language } = req.body;
 
   if (!image || typeof image !== 'string') {
     return res.status(400).json({ error: 'Base64 encoded image is required' });
@@ -37,7 +37,7 @@ router.post('/analyze', async (req, res) => {
   const model = process.env.GEMINI_MODEL || 'unknown';
   const base64SizeKB = Math.round(image.length / 1024);
   const approxBytesKB = Math.round(approxBytes / 1024);
-  console.log(`[vision] Request received: mimeType=${mimeType}, base64Size=${base64SizeKB}KB, approxBinarySize=${approxBytesKB}KB, model=${model}, hasTripId=${!!tripId}`);
+  console.log(`[vision] Request received: mimeType=${mimeType}, language=${language || 'English'}, base64Size=${base64SizeKB}KB, approxBinarySize=${approxBytesKB}KB, model=${model}, hasTripId=${!!tripId}`);
 
   const requestStart = Date.now();
 
@@ -57,7 +57,7 @@ router.post('/analyze', async (req, res) => {
       }
     }
 
-    const guide = await generatePhotoGuide(image, mimeType);
+    const guide = await generatePhotoGuide(image, mimeType, language);
 
     const elapsed = Date.now() - requestStart;
     console.log(`[vision] Request completed successfully in ${elapsed}ms`);

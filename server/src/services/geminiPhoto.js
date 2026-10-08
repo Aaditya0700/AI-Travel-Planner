@@ -95,7 +95,7 @@ function readText(response) {
   return text.trim();
 }
 
-export async function generatePhotoGuide(base64Image, mimeType) {
+export async function generatePhotoGuide(base64Image, mimeType, language = 'English') {
   if (!isGeminiConfigured()) {
     throw new GeminiNotConfiguredError('Gemini is not configured on this server');
   }
@@ -106,12 +106,12 @@ export async function generatePhotoGuide(base64Image, mimeType) {
 
   const client = getGeminiClient();
   const model = getGeminiModel();
-  const { systemInstruction, userPrompt } = buildPhotoGuidePrompt();
+  const { systemInstruction, userPrompt } = buildPhotoGuidePrompt(language);
 
   // Detailed logging
   const base64SizeKB = Math.round(base64Image.length / 1024);
   const approxBytesKB = Math.round((base64Image.length * 3) / 4 / 1024);
-  console.log(`[geminiPhoto] Starting request: model=${model}, mimeType=${mimeType}, base64Size=${base64SizeKB}KB, approxBinarySize=${approxBytesKB}KB`);
+  console.log(`[geminiPhoto] Starting request: model=${model}, mimeType=${mimeType}, language=${language}, base64Size=${base64SizeKB}KB, approxBinarySize=${approxBytesKB}KB`);
 
   let lastError = null;
 
