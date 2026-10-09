@@ -428,7 +428,7 @@ export function PhotoGuide({ guide, onSpeak, speaking, onClose }) {
 
         <section className="photo-guide-section">
           <h3>
-            <span className="material-symbols-outlined">landmark</span>
+            <span className="material-symbols-outlined">account_balance</span>
             Significance
           </h3>
           <p>{guide.significance}</p>
