@@ -1,4 +1,4 @@
-﻿// Explore by category data with stable Unsplash image URLs
+// Explore by category data with stable Unsplash image URLs
 
 export const categories = [
   {
@@ -34,13 +34,13 @@ export const categories = [
   {
     id: 'spiritual',
     label: 'Spiritual',
-    imageId: '1509228627152-72ae9b7b7c5a',
-    icon: 'temple'
+    imageId: '1544367567-0f2fcb009e0b',
+    icon: 'self_improvement'
   },
   {
     id: 'adventure',
     label: 'Adventure',
-    imageId: '1551632811561-b32c6b8e8c6a',
+    imageId: '1501555088652-021faa106b9b',
     icon: 'directions_bike'
   },
   {

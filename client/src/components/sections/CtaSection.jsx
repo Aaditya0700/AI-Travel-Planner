@@ -1,11 +1,11 @@
-﻿import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export default function CtaSection() {
   return (
     <section id='cta' className='landing-section cta-section' aria-labelledby='cta-title'>
       <div className='cta-background' aria-hidden='true'>
         <img
-          src='https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&h=1080&fit=crop&auto=format&q=80'
+          src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&h=1080&fit=crop&auto=format&q=80'
           alt=''
         />
         <div className='cta-overlay' />

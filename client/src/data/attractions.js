@@ -1,11 +1,11 @@
-﻿// Places worth visiting / attractions data with stable Unsplash image URLs
+// Places worth visiting / attractions data with stable Unsplash image URLs
 
 export const attractions = [
   {
     id: 'amber-fort',
     name: 'Amber Fort',
     destination: 'Jaipur',
-    imageId: '1477587458883-47181e0ac48a',
+    imageId: '1534758607507-754e582adfa4',
     shortDesc: 'Magnificent hilltop fort with intricate marble work and mirror palace.',
     category: 'Heritage'
   },
@@ -37,7 +37,7 @@ export const attractions = [
     id: 'baga-beach',
     name: 'Baga Beach',
     destination: 'Goa',
-    imageId: '1512343879784-5420e6a6b7c2',
+    imageId: '1519046904884-53103b34b206',
     shortDesc: 'Popular beach with water sports, shacks, and vibrant nightlife.',
     category: 'Beaches'
   },

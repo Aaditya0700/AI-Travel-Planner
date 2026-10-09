@@ -1,11 +1,5 @@
-﻿import { features, getFeatureIcon } from '../../data/features.js';
+import { features, getFeatureIcon } from '../../data/features.js';
 
-const iconComponents = {
-  map: 'map',
-  account_balance_wallet: 'account_balance_wallet',
-  smart_toy: 'smart_toy',
-  camera_alt: 'camera_alt'
-};
 
 export default function FeaturesSection() {
   return (

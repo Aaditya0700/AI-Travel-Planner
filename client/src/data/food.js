@@ -1,19 +1,19 @@
-﻿// Popular food and culinary experiences data with verified image URLs
+// Popular food and culinary experiences data with verified image URLs
 
 export const foodExperiences = [
   {
     id: 'dal-baati-churma',
     name: 'Dal Baati Churma',
     destination: 'Jaipur',
-    imageId: '1546069901-ba9599a7e63c',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dal_Baati_Churma.jpg',
     shortDesc: 'Rajasthani signature — baked wheat balls with lentils and sweet crumble.',
     isMustTry: true
   },
-{
+  {
     id: 'goan-fish-curry',
     name: 'Goan Fish Curry',
     destination: 'Goa',
-    imageId: '1565299585323-38d6b0865b47',
+    imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Goan_Fish_Curry.jpg',
     shortDesc: 'Tangy coconut-based curry with fresh catch — coastal flavor at its best.',
     isMustTry: true
   },
@@ -25,35 +25,35 @@ export const foodExperiences = [
     shortDesc: 'Aromatic lamb curry slow-cooked with Kashmiri chilies and spices.',
     isMustTry: true
   },
-{
+  {
     id: 'appam-stew',
     name: 'Appam & Stew',
     destination: 'Kerala',
     imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Appam_and_stew.jpg',
-    shortDesc: 'Lacy rice pancakes with creamy vegetable or meat stew \u2014 breakfast classic.',
+    shortDesc: 'Lacy rice pancakes with creamy vegetable or meat stew — breakfast classic.',
     isMustTry: true
   },
-{
+  {
     id: 'vada-pav',
     name: 'Vada Pav',
     destination: 'Mumbai',
     imageId: '1750767397012-3413ba4fdbc7',
-    shortDesc: 'Mumbai\'s beloved street food \u2014 spicy potato fritter in a soft bun.',
+    shortDesc: 'Mumbai\'s beloved street food — spicy potato fritter in a soft bun.',
     isMustTry: true
   },
-{
+  {
     id: 'chole-bhature',
     name: 'Chole Bhature',
     destination: 'Delhi',
     imageUrl: 'https://commons.wikimedia.org/wiki/Special:FilePath/Chole_bhature.jpg',
-    shortDesc: 'Spicy chickpea curry with fluffy fried bread \u2014 Punjabi comfort food.',
+    shortDesc: 'Spicy chickpea curry with fluffy fried bread — Punjabi comfort food.',
     isMustTry: true
   },
   {
     id: 'sushi',
     name: 'Sushi',
     destination: 'Kyoto',
-    imageId: '1579584425855-c9ce6a045d74',
+    imageId: '1579871494447-9811cf80d66c',
     shortDesc: 'Artful vinegared rice with fresh fish — precision and tradition.',
     isMustTry: false
   },
@@ -73,9 +73,10 @@ export function getFoodImageUrl(imageId, options = {}) {
 }
 
 export function getFoodImageUrlFromUrl(imageUrl, options = {}) {
-  // For direct image URLs (e.g., Wikimedia Commons), append size parameters if supported
-  // Wikimedia Commons Special:FilePath doesn't support query params for resizing
-  // Return as-is; CSS will handle sizing
+  const { width = 500 } = options;
+  if (imageUrl.includes('commons.wikimedia.org') && !imageUrl.includes('width=')) {
+    return `${imageUrl}?width=${width}`;
+  }
   return imageUrl;
 }
 

@@ -1,4 +1,4 @@
-﻿// Popular destinations data with stable Unsplash image URLs
+// Popular destinations data with stable Unsplash image URLs
 // Image format: https://images.unsplash.com/photo-{id}?w=600&h=400&fit=crop&auto=format&q=80
 
 export const destinations = [
@@ -6,15 +6,15 @@ export const destinations = [
     id: 'jaipur',
     name: 'Jaipur',
     country: 'India',
-    imageId: '1477587458883-47181e0ac48a',
-    shortDesc: 'The Pink City \u2014 majestic forts, vibrant bazaars, and royal heritage.',
+    imageId: '1599661046289-e31897846e41',
+    shortDesc: 'The Pink City — majestic forts, vibrant bazaars, and royal heritage.',
     anchor: 'jaipur'
   },
   {
     id: 'goa',
     name: 'Goa',
     country: 'India',
-    imageId: '1512343879784-5420e6a6b7c2',
+    imageId: '1587922546307-776227941871',
     shortDesc: 'Sun-drenched beaches, Portuguese heritage, and legendary nightlife.',
     anchor: 'goa'
   },

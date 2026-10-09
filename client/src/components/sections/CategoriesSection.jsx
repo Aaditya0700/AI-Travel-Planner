@@ -1,4 +1,8 @@
-﻿import { categories, getCategoryImageUrl, getCategoryPlaceholder } from '../../data/categories.js';
+import { categories, getCategoryImageUrl, getCategoryPlaceholder } from '../../data/categories.js';
+
+const CATEGORY_ICON_MAP = {
+  temple: 'self_improvement'
+};
 
 export default function CategoriesSection() {
   return (
@@ -29,7 +33,7 @@ export default function CategoriesSection() {
               </div>
               <div className='category-card-content'>
                 <span className='material-symbols-outlined category-icon' aria-hidden='true'>
-                  {cat.icon}
+                  {CATEGORY_ICON_MAP[cat.icon] || cat.icon}
                 </span>
                 <h3 className='category-label'>{cat.label}</h3>
               </div>
