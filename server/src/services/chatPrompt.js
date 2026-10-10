@@ -4,7 +4,16 @@
 // documents and the client cannot inject instructions.
 
 const MAX_MESSAGE_LENGTH = 1000;
-const MAX_HISTORY_MESSAGES = 10;
+const MAX_HISTORY_MESSAGES = 6;
+const MAX_HISTORY_MESSAGE_LENGTH = 600;
+const MAX_EXPENSE_CATEGORIES = 8;
+const MAX_ACTIVITIES_PER_DAY = 5;
+const MAX_ACTIVITY_DESCRIPTION_LENGTH = 240;
+
+function truncateText(value, maxLength) {
+  const text = typeof value === 'string' ? value : '';
+  return text.length > maxLength ? `${text.slice(0, maxLength).trimEnd()}…` : text;
+}
 
 export function validateMessage(message) {
   if (!message || typeof message !== 'string') {
@@ -70,9 +79,19 @@ function buildExpenseContext(expenses, trip) {
     return acc;
   }, {});
 
-  const categoryLines = Object.entries(categoryTotals)
-    .sort(([, a], [, b]) => b - a)
+  const sortedCategories = Object.entries(categoryTotals)
+    .sort(([, a], [, b]) => b - a);
+  const categoryLines = sortedCategories
+    .slice(0, MAX_EXPENSE_CATEGORIES)
     .map(([cat, amount]) => `${cat}: ${formatCurrency(amount, trip.currency || 'INR')}`);
+  const omittedCategories = sortedCategories.slice(MAX_EXPENSE_CATEGORIES);
+
+  if (omittedCategories.length > 0) {
+    const omittedTotal = omittedCategories.reduce((sum, [, amount]) => sum + amount, 0);
+    categoryLines.push(
+      `Other categories (${omittedCategories.length}): ${formatCurrency(omittedTotal, trip.currency || 'INR')}`
+    );
+  }
 
   const remaining = trip.budget !== null && trip.budget !== undefined
     ? trip.budget - totalSpent
@@ -96,10 +115,14 @@ function buildItineraryContext(itinerary) {
   }
 
   const dayLines = itinerary.days.map((day) => {
-    const activities = day.activities
-      .map((a) => `  - ${a.time} ${a.title}: ${a.description}`)
+    const dayActivities = Array.isArray(day.activities) ? day.activities : [];
+    const activities = dayActivities
+      .slice(0, MAX_ACTIVITIES_PER_DAY)
+      .map((a) => `  - ${a.time} ${a.title}: ${truncateText(a.description, MAX_ACTIVITY_DESCRIPTION_LENGTH)}`)
       .join('\n');
-    return `Day ${day.day} (${day.date}) — ${day.title}:\n${activities}`;
+    const omittedCount = dayActivities.length - MAX_ACTIVITIES_PER_DAY;
+    const omittedNote = omittedCount > 0 ? `\n  - ${omittedCount} additional activities omitted` : '';
+    return `Day ${day.day} (${day.date}) — ${day.title}:\n${activities}${omittedNote}`;
   });
 
   return ['ITINERARY:', ...dayLines].join('\n');
@@ -111,7 +134,9 @@ function buildHistoryContext(history) {
   }
 
   const recent = history.slice(-MAX_HISTORY_MESSAGES);
-  const lines = recent.map((msg) => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`);
+  const lines = recent.map((msg) =>
+    `${msg.role === 'user' ? 'User' : 'Assistant'}: ${truncateText(msg.content, MAX_HISTORY_MESSAGE_LENGTH)}`
+  );
   return ['CONVERSATION HISTORY:', ...lines].join('\n');
 }
 

@@ -112,7 +112,8 @@ export async function sendChatMessage(trip, expenses, itinerary, history, userMe
         contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
         config: {
           systemInstruction: { text: systemInstruction },
-          temperature: 0.5,
+          thinkingConfig: { thinkingLevel: 'low' },
+          maxOutputTokens: 2048,
           httpOptions: {
             timeout: REQUEST_TIMEOUT_MS,
             retryOptions: { attempts: 1 },
