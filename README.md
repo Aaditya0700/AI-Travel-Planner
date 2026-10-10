@@ -1,201 +1,266 @@
-# AI Travel Planner
+# AI Travel Planner ✈️
 
-A full-stack web application for planning trips, tracking expenses, and generating AI-powered day-by-day itineraries. Built as a student portfolio project.
+An AI-powered travel planning web application that helps users organize trips, generate personalized itineraries, track expenses, and explore destinations using an AI Photo Guide.
+
+[Live Demo](https://ai-travel-planner-ivory-delta.vercel.app/) · [GitHub Repository](https://github.com/Aaditya0700/AI-Travel-Planner)
+
 
 ## Features
 
-- **User Authentication**: Secure registration, login, and JWT-based session management
-- **Trip Management**: Create, read, update, and delete trips with dates, budget, and currency
-- **Expense Tracking**: Log, categorize, and summarize trip expenses with per-trip totals
-- **AI Itinerary Generation**: Generate detailed day-by-day itineraries using Google Gemini AI based on destination, dates, budget, and notes
-- **Protected Routes**: All trip, expense, and itinerary data is scoped to authenticated users
-- **Validation & Security**: Input validation, ownership checks, and secure API design
+* **User Authentication:** Registration, login, and JWT-based authentication.
+* **Trip Management:** Create, view, update, and delete trips with destination, travel dates, budget, and currency.
+* **AI Itinerary Generator:** Generate personalized day-by-day travel plans using Google Gemini.
+* **AI Travel Chatbot:** Get travel-related information and assistance through a conversational interface.
+* **AI Photo Guide:** Upload or capture a photo to receive AI-generated information about the location or landmark.
+* **Multilingual Photo Guide:** Get Photo Guide responses in English or Hindi.
+* **Voice Assistance:** Listen to Photo Guide responses using the voice feature.
+* **Expense Tracking:** Record, categorize, and summarize expenses for individual trips.
+* **Protected Resources:** Keep trip-related data scoped to authenticated users.
+* **Responsive Interface:** Explore the application through a modern web interface.
+
+## Screenshots
+
+Add screenshots of your actual deployed application here.
+
+| Home Page               | AI Itinerary             |
+| ----------------------- | ------------------------ |
+| Add homepage screenshot | Add itinerary screenshot |
+
+| AI Photo Guide             | Travel Chatbot         |
+| -------------------------- | ---------------------- |
+| Add Photo Guide screenshot | Add chatbot screenshot |
 
 ## Tech Stack
 
 ### Frontend
-- React 19 with Vite
-- React Router DOM (client-side routing)
-- Fetch API for HTTP requests
-- CSS for styling
+
+* React 19
+* Vite
+* React Router DOM
+* Fetch API
+* CSS
 
 ### Backend
-- Node.js with Express 5
-- MongoDB with Mongoose ODM
-- JSON Web Tokens (JWT) for authentication
-- bcryptjs for password hashing
-- express-validator for request validation
-- @google/genai for Gemini API integration
+
+* Node.js
+* Express 5
+* REST API
+* JSON Web Tokens (JWT)
+* bcryptjs
+* express-validator
+
+### Database
+
+* MongoDB
+* Mongoose ODM
+
+### AI Integration
+
+* Google Gemini API
+* `@google/genai`
+
+### Deployment
+
+* Frontend: Vercel
+* Backend: Render
+* Database: MongoDB Atlas
 
 ## Architecture
 
-- **Frontend**: React SPA served via Vite (dev) / static build (prod)
-- **Backend**: RESTful Express API (`/api/v1/*`)
-- **Database**: MongoDB (local or Atlas)
-- **AI Service**: Google Gemini API for itinerary generation
+The application follows a client-server architecture.
 
-Flow: React frontend → Express/Node backend → MongoDB. Backend → Gemini API for AI itinerary generation.
+```text
+React Frontend (Vercel)
+          |
+          | HTTP / REST API
+          v
+Express + Node.js Backend (Render)
+          |
+          +---- MongoDB Atlas
+          |
+          +---- Google Gemini API
+```
+
+The frontend communicates with the backend through REST API endpoints. The backend handles authentication, database operations, and AI requests.
 
 ## Project Structure
 
-\`\`\`
+```text
 AI-Travel-Planner/
-├── client/                # React frontend
+├── client/
 │   ├── src/
-│   │   ├── components/   # Reusable UI components
-│   │   ├── context/      # Auth context
-│   │   ├── pages/        # Page components
-│   │   ├── services/     # API client/services
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
 │   │   └── ...
-│   └── package.json
-├── server/                # Express backend
+│   ├── public/
+│   ├── package.json
+│   └── vercel.json
+│
+├── server/
 │   ├── src/
-│   │   ├── config/       # DB, Gemini config
-│   │   ├── middleware/   # Auth middleware
-│   │   ├── models/       # Mongoose models
-│   │   ├── routes/       # API routes
-│   │   ├── services/     # Business logic (Gemini)
-│   │   ├── validators/   # Input validation
-│   │   └── app.js, index.js
-│   └── package.json
+│   │   ├── config/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   ├── validators/
+│   │   ├── app.js
+│   │   └── index.js
+│   ├── package.json
+│   └── .env.example
+│
 └── README.md
-\`\`\`
+```
 
-## Backend
+## Getting Started
 
-- **Auth** (`/api/v1/auth`): Register, login, get current user. Passwords hashed with bcrypt; JWTs signed with `JWT_SECRET`.
-- **Trips** (`/api/v1/trips`): CRUD operations scoped to authenticated user. Ownership enforced on all operations.
-- **Expenses** (`/api/v1/expenses`): CRUD + summary endpoint (`/summary?tripId=...`) with trip ownership validation.
-- **Itineraries** (`/api/v1/itineraries`): Generate AI itinerary per trip (`POST /generate`), retrieve by trip or list user itineraries. Enforces max trip length and validates AI responses.
-- **Health** (`/`, `/api/v1/health`): Basic health check endpoint.
+### Prerequisites
 
-## Frontend
+Install the following before running the project:
 
-- Vite-powered React app with client-side routing (React Router)
-- Auth context for managing user/token state
-- Protected routes requiring authentication
-- Pages: Login, Register, Trips list, Trip detail (with expenses + itinerary)
-- Services layer abstracts API calls to backend
+* Node.js 18 or later, compatible with the installed dependencies
+* npm
+* MongoDB locally or a MongoDB Atlas account
+* A Google Gemini API key
 
-## Gemini AI Integration
+### 1. Clone the repository
 
-- Backend-only integration via `@google/genai`
-- Configuration from `GEMINI_API_KEY` and `GEMINI_MODEL` (env vars)
-- Generates structured day-by-day itineraries based on trip details (destination, dates, budget, notes)
-- Validates AI responses, handles missing config/unavailable/errors gracefully
-- Never exposes API key to frontend
+```bash
+git clone https://github.com/Aaditya0700/AI-Travel-Planner.git
+cd AI-Travel-Planner
+```
 
-## Authentication
+### 2. Install dependencies
 
-- JWT-based auth with Bearer tokens
-- `protect` middleware on protected routes
-- User ownership enforced on all resource operations (trips/expenses/itineraries)
-- Passwords never returned in API responses
+Install the backend dependencies:
 
-## Expense Management
-
-- Expenses belong to a trip and the owning user
-- CRUD operations with validation (amount/category/date etc.)
-- Aggregated summary endpoint computes total spent per trip
-- Currency shown from associated trip
-
-## Environment Variables
-
-### Server (`server/.env`)
-Required/optional variables (see `server/.env.example`):
-- `PORT` (default: 5100)
-- `MONGO_URI` (MongoDB connection string)
-- `JWT_SECRET` (required for signing tokens)
-- `JWT_EXPIRES_IN` (e.g., `7d`)
-- `GEMINI_API_KEY` (required for AI itinerary generation)
-- `GEMINI_MODEL` (e.g., `gemini-3.5-flash-lite`)
-
-### Client (`client/.env`)
-- `VITE_API_URL` (backend API base URL, e.g., `http://localhost:5100`) - exposed to browser (must not contain secrets)
-
-## Local Setup
-
-1. **Prerequisites**
-   - Node.js 18+ and npm
-   - MongoDB running locally (`mongodb://127.0.0.1:27017`) or MongoDB Atlas URI
-
-2. **Clone and install**
-   \`\`\`bash
-   # Install server dependencies
-   cd server && npm install
-   
-   # Install client dependencies
-   cd ../client && npm install
-   \`\`\`
-
-3. **Environment setup**
-   - Copy `server/.env.example` to `server/.env` and fill required values
-   - Copy `client/.env.example` to `client/.env` and set `VITE_API_URL`
-
-## How to Run
-
-### Start Backend (Dev)
-\`\`\`bash
+```bash
 cd server
-npm run dev  # uses nodemon
-\`\`\`
+npm install
+```
 
-### Start Frontend (Dev)
-\`\`\`bash
+Install the frontend dependencies in a separate terminal:
+
+```bash
+cd AI-Travel-Planner/client
+npm install
+```
+
+Use the actual local project path if your terminal is not already in the repository root.
+
+### 3. Configure environment variables
+
+Create `server/.env` using `server/.env.example` as a reference.
+
+Configure the following variables:
+
+```env
+PORT=5100
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_long_random_secret
+JWT_EXPIRES_IN=7d
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=your_supported_gemini_model
+```
+
+Create `client/.env` using `client/.env.example` as a reference:
+
+```env
+VITE_API_URL=http://localhost:5100
+```
+
+Use the API base URL format expected by the application. If the frontend expects `/api/v1` as part of the base URL, include it accordingly.
+
+**Security:** Never commit real API keys, database credentials, JWT secrets, or `.env` files to GitHub. Use your hosting provider's environment-variable settings for production.
+
+### 4. Run the backend
+
+Open a terminal:
+
+```bash
+cd server
+npm run dev
+```
+
+The backend should start on the configured port.
+
+### 5. Run the frontend
+
+Open another terminal:
+
+```bash
 cd client
-npm run dev  # starts Vite dev server
-\`\`\`
+npm run dev
+```
 
-### Production Build (Client)
-\`\`\`bash
+Open the local URL displayed by Vite in your terminal, usually `http://localhost:5173`.
+
+### 6. Build the frontend
+
+To create a production build:
+
+```bash
 cd client
 npm run build
-\`\`\`
+```
 
-### Linting
-\`\`\`bash
-# Client
-cd client && npm run lint
+### 7. Run lint checks
 
-# Server
-cd server && npm run lint
-\`\`\`
+Run the following commands if the corresponding lint scripts are configured in each package:
 
-## API Endpoint Overview
+```bash
+cd client
+npm run lint
+```
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `/api/v1/auth/register` | No | Register new user |
-| POST | `/api/v1/auth/login` | No | Login, returns JWT |
-| GET | `/api/v1/auth/me` | Yes | Get current user |
-| GET/POST/PUT/DELETE | `/api/v1/trips/*` | Yes | Trip CRUD (scoped to user) |
-| GET/POST/PUT/DELETE | `/api/v1/expenses/*` | Yes | Expense CRUD (scoped to user) |
-| GET | `/api/v1/expenses/summary` | Yes | Trip expense totals |
-| POST | `/api/v1/itineraries/generate` | Yes | Generate AI itinerary for trip |
-| GET | `/api/v1/itineraries/` | Yes | List user's itineraries |
-| GET | `/api/v1/itineraries/trip/:tripId` | Yes | Get itinerary for specific trip |
-| GET | `/`, `/api/v1/health` | No | Health check |
+```bash
+cd server
+npm run lint
+```
 
-## Production/Deployment Considerations
+## API Overview
 
-- Set secure `JWT_SECRET` (long random string)
-- Use production MongoDB (Atlas recommended)
-- Configure CORS appropriately for your frontend domain
-- Set `VITE_API_URL` to production backend URL
-- Run `npm run build` for client; serve static files or use reverse proxy
-- Keep `GEMINI_API_KEY` server-side only; never expose to client
-- Consider rate limiting, input size limits, and error monitoring for production
-- Ensure `.env` files are never committed (gitignored)
+The backend exposes REST API endpoints for authentication, trip management, expenses, and AI itineraries.
+
+| Method | Endpoint                       | Purpose                   |
+| ------ | ------------------------------ | ------------------------- |
+| POST   | `/api/v1/auth/register`        | Register a user           |
+| POST   | `/api/v1/auth/login`           | Authenticate a user       |
+| GET    | `/api/v1/auth/me`              | Retrieve the current user |
+| `/`    | `/api/v1/trips/*`              | Trip management           |
+| `/`    | `/api/v1/expenses/*`           | Expense management        |
+| GET    | `/api/v1/expenses/summary`     | Retrieve expense totals   |
+| POST   | `/api/v1/itineraries/generate` | Generate an AI itinerary  |
+| GET    | `/api/v1/itineraries/`         | List user itineraries     |
+| GET    | `/api/v1/health`               | Check backend health      |
+
+Protected endpoints require authentication. Refer to the source code for the exact HTTP methods, request bodies, and response formats supported by each route.
+
+## Security Considerations
+
+* Passwords are hashed using bcryptjs.
+* JWTs are used for authenticated requests.
+* Protected routes enforce authentication.
+* User ownership checks help prevent unauthorized access to trip resources.
+* Gemini API requests are made from the backend.
+* Environment variables keep credentials out of frontend source code.
 
 ## Future Improvements
 
-- Add itinerary editing/customization after AI generation
-- Implement expense categories with charts/visualizations
-- Add email verification/password reset
-- Enable real-time collaboration on trips
-- Add offline support/PWA capabilities
-- Expand test coverage (unit/integration)
-- Add file uploads (receipts, photos)
-- Implement trip sharing with granular permissions
-- Add multi-currency conversion
-- Improve mobile responsiveness further
+* Edit and customize AI-generated itineraries.
+* Add expense charts and spending analytics.
+* Add trip sharing and collaboration.
+* Implement email verification and password recovery.
+* Expand automated testing.
+* Add offline support and progressive web app capabilities.
+* Improve travel recommendations and itinerary personalization.
+
+## Author
+
+Developed as a full-stack portfolio project to explore React, Node.js, Express, MongoDB, authentication, and generative AI.
+
+**Live application:** https://ai-travel-planner-ivory-delta.vercel.app/
+
+**Source code:** https://github.com/Aaditya0700/AI-Travel-Planner
