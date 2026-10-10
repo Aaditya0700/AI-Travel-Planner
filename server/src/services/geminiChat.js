@@ -51,6 +51,14 @@ function isTransient(error) {
   return TRANSIENT_MESSAGE.test(error?.message || '');
 }
 
+function isTimeoutError(error) {
+  const status = readStatus(error);
+  const details = [error?.code, error?.name, error?.message].filter(Boolean).join(' ');
+
+  return status === 408 || status === 504 ||
+    /deadline.?exceeded|timeout|timed out|ETIMEDOUT|ECONNABORTED|AbortError/i.test(details);
+}
+
 function isQuotaError(error) {
   const status = readStatus(error);
   if (status !== null) {
@@ -124,7 +132,7 @@ export async function sendChatMessage(trip, expenses, itinerary, history, userMe
         throw new GeminiChatError('AI usage limit reached. Please try again later.', 'AI_QUOTA_EXCEEDED');
       }
 
-      if (attempt === MAX_ATTEMPTS || !isTransient(error)) {
+      if (isTimeoutError(error) || attempt === MAX_ATTEMPTS || !isTransient(error)) {
         break;
       }
 
