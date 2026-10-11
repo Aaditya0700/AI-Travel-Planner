@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/useAuth.js';
 import {
   expenseService,
@@ -25,6 +25,8 @@ export default function ExpenseSection({ trip }) {
   // The trip id is kept next to the list, so the derived loading check can tell
   // this trip's expenses from another trip's that are still on screen.
   const [expenses, setExpenses] = useState({ trip: null, items: [] });
+  const mutationVersion = useRef(0);
+  const [analyticsVersion, setAnalyticsVersion] = useState(0);
   // Like the trip and itinerary errors, this one carries the trip id it belongs
   // to, so switching trips never shows the previous trip's message.
   const [loadError, setLoadError] = useState(null);
@@ -44,6 +46,7 @@ export default function ExpenseSection({ trip }) {
   useEffect(() => {
     let cancelled = false;
     const tripId = trip.id;
+    const requestVersion = mutationVersion.current;
 
     async function loadExpenses() {
       try {
@@ -51,11 +54,13 @@ export default function ExpenseSection({ trip }) {
 
         if (cancelled) return;
 
-        // The trip id is kept alongside the list so the derived loading check
-        // above can tell this trip's expenses from another trip's.
-        setExpenses({ trip: tripId, items: data });
+        // A list request started before a successful mutation must not replace
+        // the newer local state with its stale response.
+        if (requestVersion === mutationVersion.current) {
+          setExpenses({ trip: tripId, items: data });
+        }
       } catch (error) {
-        if (cancelled) return;
+        if (cancelled || requestVersion !== mutationVersion.current) return;
 
         if (error.status === 401) {
           handleUnauthorized();
@@ -114,22 +119,25 @@ export default function ExpenseSection({ trip }) {
 
       if (editingId) {
         const updated = await expenseService.update(editingId, payload);
+        mutationVersion.current += 1;
 
         setExpenses((current) => ({
-          ...current,
+          trip: trip.id,
           items: current.items.map((item) => (item.id === updated.id ? updated : item)),
         }));
       } else {
         const created = await expenseService.create(trip.id, payload);
+        mutationVersion.current += 1;
 
         // The backend already returns the list in date order, so a new expense
         // is put back into place by date rather than only pushed on the end.
         setExpenses((current) => ({
-          ...current,
-          items: sortByDate([...current.items, created]),
+          trip: trip.id,
+          items: sortByDate([...(current.trip === trip.id ? current.items : []), created]),
         }));
       }
 
+      setAnalyticsVersion((version) => version + 1);
       closeForm();
     } catch (error) {
       if (error.status === 401) {
@@ -153,11 +161,13 @@ export default function ExpenseSection({ trip }) {
 
     try {
       await expenseService.remove(expense.id);
+      mutationVersion.current += 1;
 
       setExpenses((current) => ({
-        ...current,
+        trip: trip.id,
         items: current.items.filter((item) => item.id !== expense.id),
       }));
+      setAnalyticsVersion((version) => version + 1);
 
       // Deleting the row that is being edited closes that form too.
       if (editingId === expense.id) {
@@ -297,7 +307,7 @@ export default function ExpenseSection({ trip }) {
         </div>
       )}
 
-      <ExpenseAnalytics trip={trip} />
+      <ExpenseAnalytics trip={trip} refreshVersion={analyticsVersion} />
     </section>
   );
 }

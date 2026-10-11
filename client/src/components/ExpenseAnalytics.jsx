@@ -4,7 +4,7 @@ import { expenseService, formatAmount } from '../services/expenseService.js';
 import ErrorMessage from './ErrorMessage.jsx';
 import Spinner from './Spinner.jsx';
 
-export default function ExpenseAnalytics({ trip }) {
+export default function ExpenseAnalytics({ trip, refreshVersion }) {
   const { handleUnauthorized } = useAuth();
 
   const [analytics, setAnalytics] = useState(null);
@@ -45,7 +45,7 @@ export default function ExpenseAnalytics({ trip }) {
     return () => {
       cancelled = true;
     };
-  }, [trip.id, handleUnauthorized]);
+  }, [trip.id, handleUnauthorized, refreshVersion]);
 
   const currency = trip.currency || '';
   const hasBudget = trip.budget !== null && trip.budget !== undefined && trip.budget > 0;

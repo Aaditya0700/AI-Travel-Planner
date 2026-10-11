@@ -69,7 +69,7 @@ export const attractions = [
     id: 'red-fort',
     name: 'Red Fort',
     destination: 'Delhi',
-    imageId: '1587474260584-136574528ed5',
+    imageId: '1776106229272-f3ac167fd43c',
     shortDesc: 'UNESCO World Heritage Mughal fort — symbol of India\'s independence.',
     category: 'Heritage'
   },
